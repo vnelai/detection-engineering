@@ -1,0 +1,9 @@
+// Scheduled task that downloads and runs code
+// MITRE ATT&CK: T1053.005, T1059.001
+// Table: WindowsProcess_CL (Microsoft Sentinel, LAW-SilentCorridor)
+// Tested on 2026-07-04 11:00 to 12:00 UTC (attack day). To run it as a live rule, replace the dates with ago(5m).
+WindowsProcess_CL
+| where TimeGenerated between (datetime(2026-07-04 11:00) .. datetime(2026-07-04 12:00))
+| where TargetProcessCommandLine contains "schtasks" and TargetProcessCommandLine contains "/create"
+| where TargetProcessCommandLine has_any ("DownloadString", "Invoke-Expression", "IEX", "-EncodedCommand", "http://", "https://")
+| project TimeGenerated, DvcHostname, ActorUsername, TargetProcessCommandLine

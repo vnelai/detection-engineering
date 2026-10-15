@@ -1,0 +1,16 @@
+// Remote admin share access on a domain controller
+// MITRE ATT&CK: T1021.002, T1569.002
+// Tables: SecurityEvent (Microsoft Sentinel, LAW-SilentCorridor)
+// Tested on 2026-07-04 14:30 to 15:30 UTC (attack day). To run it as a live rule, replace the dates with ago(5m).
+let logons = SecurityEvent
+    | where TimeGenerated between (datetime(2026-07-04 14:30) .. datetime(2026-07-04 15:30))
+    | where EventID == 4624 and LogonType == 3
+    | where TargetUserName !endswith "$"
+    | project LogonTime = TimeGenerated, Computer, TargetUserName, IpAddress;
+SecurityEvent
+| where TimeGenerated between (datetime(2026-07-04 14:30) .. datetime(2026-07-04 15:30))
+| where EventID == 5140
+| where ShareName has_any ("ADMIN$", "C$")
+| join kind=inner logons on Computer, IpAddress
+| where TimeGenerated between (LogonTime .. LogonTime + 1m)
+| project TimeGenerated, Computer, TargetUserName, SubjectUserName, IpAddress, ShareName
