@@ -4,6 +4,8 @@ Detection rules I've written for Microsoft Sentinel and tested on the LOG(N) Pac
 
 _Defensive security work by Virginia Gina Nelai, performed on a cyber range (simulated scenarios)._
 
+![From a threat hunt to two tested Sentinel detection rules, with attack-day and backtest results](images/detection-pipeline.png)
+
 ---
 
 ## Rules
